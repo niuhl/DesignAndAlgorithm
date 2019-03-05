@@ -3,22 +3,16 @@ package com.mystack;
 /**
  * Created by niuhonglei on 2017/12/11.
  */
-public class MyStack<E> implements IStack {
-    private Object[] data = null;
+public class MyStack<E> implements IStack<E> {
+    private Object[] arrs;
     private int top;
-    private int maxSize = 0;
-
-    MyStack() {
-        this(10);
+    private int max;
+    public MyStack(int maxSize){
+        arrs = new Object[maxSize];
+        top = -1;
+        max = maxSize;
     }
 
-    public MyStack(int initSize) {
-        if (initSize >= 0) {
-            this.data = new Object[initSize];
-            this.maxSize = initSize;
-            this.top = -1;
-        }
-    }
 
     @Override
     public boolean isEmpty() {
@@ -27,57 +21,71 @@ public class MyStack<E> implements IStack {
 
     @Override
     public boolean isMax() {
-        return top >= maxSize - 1;
+        return top == max-1;
     }
 
     @Override
     public boolean push(Object o) {
-        if (isMax()) {
-            return false;
+        if(isMax()){
+            throw new RuntimeException("栈已满");
+        }else {
+            arrs[++top] = o;
         }
-        top++;
-        data[top] = o;
         return true;
     }
 
     @Override
     public E pop() {
-        if (isEmpty()) {
-            return null;
+        if(isEmpty()){
+            throw new RuntimeException("空栈");
+        }else {
+            return (E)arrs[top--];
         }
-        E e = (E) data[top];
-        top--;
-        return e;
     }
 
     @Override
-    public Object peek() {
-        if (isEmpty()) {
-            return null;
+    public E peek() {
+        if(isEmpty()){
+            throw new RuntimeException("空栈");
+        }else {
+            return (E)arrs[top];
         }
-        return (E) data[top];
     }
 
     @Override
-    public int getIndex(Object o) {
-        int index = -1;
-        if (isEmpty()) {
-            throw new RuntimeException("未匹配到元素");
-        }
-        for (int i = 0; i < data.length; i++) {
-            if (data.equals(o)) {
-                index = i;
+    public int getIndex(E o) {
+        if(isEmpty()){
+            return top;
+        }else {
+            for(int i=0;i<arrs.length;i++){
+                if(arrs[i].equals(o)){
+                    return i;
+                }
             }
-        }
-        if (index == -1) {
-            throw new RuntimeException("未匹配到元素");
-        } else {
-            return index;
+            return -1;
         }
     }
 
     @Override
     public int size() {
-        return data.length;
+        return arrs.length;
+    }
+
+    public static void main(String[] args) {
+        MyStack<String> myStack = new MyStack<>(5);
+        System.out.println(myStack.isEmpty());
+        System.out.println(myStack.isMax());
+        String st = "a,b,c,d,e";
+        for(String string:st.split(",")){
+            myStack.push(string);
+        }
+        System.out.println(myStack.isEmpty());
+        System.out.println(myStack.isMax());
+        System.out.println(myStack.top);
+        System.out.println(myStack.pop());
+        System.out.println(myStack.top);
+        myStack.push("g");
+        System.out.println(myStack.top);
+
     }
 }
